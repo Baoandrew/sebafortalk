@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create a New Recipe — Culinaria</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+    }
+
+    /* ── NAV (white, matching real GreenThumbs) ── */
+    nav {
+      background: #fff;
+      border-bottom: 1px solid #f1f1f1;
+    }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex; align-items: center;
+      padding: 0 1rem;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.55rem;
+      color: #50806B; font-weight: 700;
+      font-size: 1.7rem; text-decoration: none;
+    }
+    .nav-logo-icon { font-size: 1.55rem; }
+
+    .nav-links {
+      list-style: none; display: flex; gap: 1.5rem;
+      margin-left: auto;
+    }
+    .nav-links a {
+      color: #4a5568; text-decoration: none;
+      font-size: 1rem; font-weight: 500;
+      padding-bottom: 4px; position: relative;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: #c25450; }
+    .nav-links a.active { color: #c25450; }
+    .nav-links a.active::after {
+      content: ''; position: absolute;
+      left: 0; right: 0; bottom: -2px; height: 2px;
+      background: #c25450; border-radius: 2px;
+    }
+
+    .nav-actions {
+      display: flex; align-items: center; gap: 1rem;
+      margin-left: 1.75rem;
+    }
+    .nav-bell {
+      color: #4a5568; cursor: pointer; font-size: 1.05rem;
+    }
+    .nav-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #f9b8c8, #e879a0);
+      border: 2px solid #50806B;
+      cursor: pointer;
+    }
+    .btn-logout {
+      border: 1px solid #cbd5e0; background: #fff;
+      color: #4a5568;
+      padding: 0.45rem 1.25rem;
+      border-radius: 8px; cursor: pointer;
+      font-weight: 500; font-size: 0.92rem;
+    }
+    .btn-logout:hover { color: #8FAD9A; border-color: #8FAD9A; }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      max-width: 70%;
+      margin: 2.5rem auto 5rem;
+      padding: 0 1rem;
+    }
+
+    .page-title {
+      font-size: 2.1rem; font-weight: 800;
+      color: #c25450; margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+    .page-subtitle {
+      font-size: 0.9rem; color: #6c7574;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── TWO-COLUMN GRID ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+    }
+
+    /* ── FORM FIELDS ── */
+    .field {
+      margin-bottom: 1.25rem;
+    }
+    .field label {
+      display: block;
+      font-size: 0.92rem;
+      color: #1a1a1a;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+    }
+    .field label .req { color: #e53e3e; margin-left: 0.18rem; }
+    .field label .opt {
+      color: #a0aec0; font-size: 0.78rem;
+      font-weight: 400; margin-left: 0.4rem;
+    }
+
+    input[type="text"], input[type="file"], textarea, select {
+      width: 100%;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      background: #fff;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input[type="file"] { padding: 0.4rem; }
+    input:focus, textarea:focus, select:focus {
+      border-color: #50806B;
+      box-shadow: 0 0 0 1px #50806B;
+    }
+    input::placeholder, textarea::placeholder { color: #a0aec0; }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.55; }
+    select {
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23718096' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.85rem center;
+      padding-right: 2rem;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.72rem;
+      color: #a0aec0;
+      margin-top: 0.2rem;
+    }
+
+    /* ── IMAGE PREVIEW ── */
+    .image-preview {
+      margin-top: 0.75rem;
+    }
+    .image-preview-label {
+      font-size: 0.82rem; color: #718096; margin-bottom: 0.35rem;
+    }
+    .image-preview-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #f7fafc;
+      max-width: 300px;
+      aspect-ratio: 4 / 3;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .image-preview-box .placeholder {
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: #a0aec0; font-size: 0.85rem;
+    }
+    .image-preview-box .placeholder .icon { font-size: 2rem; }
+
+    /* ── RICH TEXT EDITOR (mock) ── */
+    .rte {
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .rte-toolbar {
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0.4rem 0.5rem;
+      display: flex; gap: 0.15rem;
+      background: #f7fafc;
+      flex-wrap: wrap;
+    }
+    .rte-btn {
+      width: 30px; height: 28px;
+      border: none; background: transparent;
+      cursor: pointer; border-radius: 4px;
+      color: #4a5568; font-size: 0.9rem;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .rte-btn:hover { background: #edf2f7; color: #1a1a1a; }
+    .rte-btn.active { background: #e8f3da; color: #50806B; }
+    .rte-divider {
+      width: 1px; background: #e2e8f0; margin: 4px 4px;
+    }
+    .rte-content {
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      line-height: 1.65;
+      min-height: 180px;
+    }
+    .rte-content.empty { color: #a0aec0; }
+
+    /* ── PARAGRAPH BLOCK ── */
+    .para-block { margin-bottom: 1.5rem; }
+
+    /* ── ADD BUTTON ── */
+    .add-row {
+      display: flex; justify-content: flex-end;
+      margin-bottom: 1.5rem;
+    }
+    .btn-add-field {
+      padding: 0.42rem 0.95rem;
+      background: #fff;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      color: #4a5568;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-weight: 500;
+      transition: 0.15s;
+    }
+    .btn-add-field:hover { border-color: #50806B; color: #50806B; }
+    .btn-add-field .plus { font-weight: 700; }
+
+    /* ── INGREDIENTS (create form) ── */
+    .ingr-row-create {
+      display: flex; align-items: center; gap: 0.55rem;
+      margin-bottom: 0.5rem;
+    }
+    .ingr-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: #e8f3da; color: #2f5e10;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .ingr-row-create input {
+      flex: 1; margin: 0;
+    }
+    .ingr-del {
+      width: 32px; height: 32px; border-radius: 7px;
+      border: 1px solid #e5e5e5; background: #fff;
+      color: #999; cursor: pointer; font-size: 1.05rem;
+      flex-shrink: 0; transition: 0.15s;
+    }
+    .ingr-del:hover {
+      color: #c25450; border-color: #f5c6cb; background: #fef2f2;
+    }
+
+    /* ── INLINE ROW (Category + Difficulty + Cook Time) ── */
+    .row-2 {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem; margin-bottom: 1.25rem;
+    }
+    .row-2 .field { margin-bottom: 0; }
+
+    /* ── MULTI-SELECT MOCK ── */
+    .multi-select {
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      min-height: 40px;
+      padding: 0.4rem 0.55rem;
+      background: #fff;
+      display: flex; flex-wrap: wrap; gap: 0.35rem;
+      align-items: center;
+    }
+    .ms-chip {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: #e8f3da; color: #2f5e10;
+      padding: 0.2rem 0.55rem; border-radius: 14px;
+      font-size: 0.8rem; font-weight: 500;
+    }
+    .ms-chip .x {
+      cursor: pointer; color: #50806B;
+      font-size: 0.95rem; line-height: 1;
+    }
+    .ms-chip .x:hover { color: #2f5e10; }
+    .ms-placeholder {
+      color: #a0aec0; font-size: 0.88rem;
+      padding: 0.2rem 0.4rem;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 1.5rem;
+      width: 100%;
+    }
+    .btn-cancel-form {
+      border: 1px solid #cbd5e0;
+      background: #fff;
+      color: #4a5568;
+      padding: 0.55rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500; font-size: 0.95rem;
+      transition: 0.15s;
+    }
+    .btn-cancel-form:hover { border-color: #50806B; color: #50806B; }
+
+    .btn-publish-form {
+      background: #50806B;
+      color: #fff;
+      border: none;
+      padding: 0.55rem 1.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600; font-size: 0.95rem;
+      transition: background 0.15s;
+    }
+    .btn-publish-form:hover { background: #33423b; }
+
+    @media (max-width: 1100px) {
+      .page { max-width: 90%; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV (white, matches real GreenThumbs Navbar.jsx) -->
+<nav>
+  <div class="nav-inner">
+    <a href="recipe-blog.html" class="nav-logo">
+      <span class="nav-logo-icon">🍳</span>
+      Culinaria
+    </a>
+    <ul class="nav-links">
+      <li><a href="recipe-blog.html">Home</a></li>
+      <li><a href="recipe-asian.html" class="active">Recipe</a></li>
+      <li><a href="#">Forum</a></li>
+      <li><a href="#">Marketplace</a></li>
+    </ul>
+    <div class="nav-actions">
+      <span class="nav-bell">🔔</span>
+      <div class="nav-avatar"></div>
+      <button class="btn-logout">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<main class="page">
+  <h1 class="page-title">Create a New Recipe</h1>
+  <p class="page-subtitle">Share your favorite dish with the Culinaria community by writing a step-by-step recipe.</p>
+
+  <div class="form-grid">
+
+    <!-- LEFT COLUMN: image + image meta -->
+    <div>
+
+      <div class="field">
+        <label>Upload Recipe Image <span class="req">*</span></label>
+        <input type="file" accept="image/*">
+
+        <div class="image-preview">
+          <div class="image-preview-label">Preview:</div>
+          <div class="image-preview-box">
+            <div class="placeholder">
+              <span class="icon">📷</span>
+              <span>No image yet</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Picture Description Title</label>
+        <input type="text" value="Steaming bowl of miso ramen with chashu pork" maxlength="80">
+        <div class="char-count">44 / 80</div>
+      </div>
+
+      <div class="field">
+        <label>Picture Description Paragraph</label>
+        <textarea rows="8" maxlength="300" placeholder="e.g. This image shows a rich miso broth topped with soft-boiled eggs, sliced pork chashu, scallions and nori — the classic Hakata-style presentation.">This image shows a rich miso broth topped with soft-boiled eggs, sliced pork chashu, scallions and nori — the classic Hakata-style presentation.</textarea>
+        <div class="char-count">147 / 300</div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: main form -->
+    <div>
+
+      <!-- Cuisine + Difficulty + Cook Time -->
+      <div class="row-2">
+        <div class="field">
+          <label>Cuisine <span class="req">*</span></label>
+          <select>
+            <option value="" disabled>Select cuisine</option>
+            <option selected>Asian</option>
+            <option>European</option>
+            <option>Dessert</option>
+            <option>Vegetarian</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Difficulty Level <span class="req">*</span></label>
+          <select>
+            <option value="" disabled>Select difficulty</option>
+            <option>Easy</option>
+            <option selected>Medium</option>
+            <option>Hard</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cook Time <span class="req">*</span></label>
+          <input type="text" value="45 min" maxlength="20" placeholder="e.g. 45 min / 1 hr 30 min">
+        </div>
+      </div>
+
+      <!-- Recipe title -->
+      <div class="field">
+        <label>Recipe Title <span class="req">*</span></label>
+        <input type="text" value="Japanese Miso Ramen" maxlength="100" placeholder="e.g. Hakata-style Miso Ramen">
+        <div class="char-count">19 / 100</div>
+      </div>
+
+      <!-- Ingredients -->
+      <div class="field">
+        <label>🥣 Ingredients <span class="req">*</span> <span class="opt">(one per line — include quantity, e.g. "200g fresh ramen noodles")</span></label>
+
+        <div class="ingr-row-create">
+          <span class="ingr-num">1</span>
+          <input type="text" value="200 g fresh ramen noodles" placeholder="e.g. 200g flour">
+          <button class="ingr-del">×</button>
+        </div>
+        <div class="ingr-row-create">
+          <span class="ingr-num">2</span>
+          <input type="text" value="3 tbsp white miso paste">
+          <button class="ingr-del">×</button>
+        </div>
+        <div class="ingr-row-create">
+          <span class="ingr-num">3</span>
+          <input type="text" value="500 ml chicken or pork broth">
+          <button class="ingr-del">×</button>
+        </div>
+        <div class="ingr-row-create">
+          <span class="ingr-num">4</span>
+          <input type="text" value="2 soft-boiled eggs (ajitsuke tamago)">
+          <button class="ingr-del">×</button>
+        </div>
+        <div class="ingr-row-create">
+          <span class="ingr-num">5</span>
+          <input type="text" placeholder="Add another ingredient...">
+          <button class="ingr-del">×</button>
+        </div>
+      </div>
+
+      <div class="add-row">
+        <button class="btn-add-field"><span class="plus">+</span> Add Ingredient</button>
+      </div>
+
+      <!-- Paragraph 1 -->
+      <div class="para-block">
+        <div class="field">
+          <label>Section Title 1 <span class="opt">(optional)</span></label>
+          <input type="text" value="Step 1: Prepare the Broth" maxlength="100" placeholder="e.g. Step 1: Choose Fresh Noodles">
+          <div class="char-count">25 / 100</div>
+        </div>
+        <div class="field">
+          <label>Paragraph 1 <span class="req">*</span></label>
+          <div class="rte">
+            <div class="rte-toolbar">
+              <button class="rte-btn" title="Bold"><b>B</b></button>
+              <button class="rte-btn" title="Italic"><i>I</i></button>
+              <button class="rte-btn" title="Underline"><u>U</u></button>
+              <span class="rte-divider"></span>
+              <button class="rte-btn" title="Bulleted list">•≡</button>
+              <button class="rte-btn" title="Numbered list">1≡</button>
+              <span class="rte-divider"></span>
+              <button class="rte-btn" title="Link">🔗</button>
+              <button class="rte-btn" title="Image">📷</button>
+              <button class="rte-btn" title="Quote">❝</button>
+            </div>
+            <div class="rte-content">
+              Bring a large pot of water to a boil. While the water heats, whisk <b>3 tablespoons of white miso paste</b> with a ladle of hot broth in a small bowl until smooth — this prevents lumps when added to the soup. Heat the broth gently in a saucepan, then stir in the miso mixture. <i>Do not boil after adding miso</i> — high heat destroys the delicate flavor and aroma.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="add-row">
+        <button class="btn-add-field"><span class="plus">+</span> Add Paragraph Field</button>
+      </div>
+
+      <!-- Quick Tips -->
+      <div class="field">
+        <label>Quick Tips</label>
+        <input type="text" value="Don't boil broth after adding miso — heat destroys flavor." maxlength="300">
+        <div class="char-count">59 / 300</div>
+      </div>
+
+      <div class="add-row">
+        <button class="btn-add-field"><span class="plus">+</span> Add Tip Field</button>
+      </div>
+
+      <!-- Linked marketplace items -->
+      <div class="field">
+        <label>Link your own Marketplace Items related to this Recipe</label>
+        <div class="multi-select">
+          <span class="ms-chip">Fresh Ramen Noodles 200g <span class="x">×</span></span>
+          <span class="ms-chip">White Miso Paste 500g <span class="x">×</span></span>
+          <span class="ms-placeholder">Select items...</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="form-actions">
+        <button class="btn-cancel-form">Cancel</button>
+        <button class="btn-publish-form">Publish Recipe</button>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

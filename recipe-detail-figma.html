@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe Detail Figma Frame</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green: #50806B;
+      --green-dark: #2F3D37;
+      --red: #c25450;
+      --line: #e7e7e7;
+      --paper: #fff;
+      --page: #fafafa;
+      --fill: #edf0ee;
+      --fill-dark: #d9dfdc;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--page);
+      color: #1a1a1a;
+    }
+
+    .blank {
+      display: block;
+      background: var(--fill);
+      border-radius: 6px;
+    }
+
+    .blank.dark { background: var(--fill-dark); }
+    .blank.green { background: var(--green); }
+    .blank.red { background: var(--red); }
+    .blank.round { border-radius: 999px; }
+
+    .logo-text {
+      color: var(--green);
+      font-weight: 700;
+      font-size: 1.7rem;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .nav-text {
+      color: #4a5568;
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .nav-text.active {
+      color: var(--red);
+      position: relative;
+    }
+
+    .nav-text.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -12px;
+      height: 2px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+
+    .small-label {
+      color: #5f6763;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .module-title {
+      color: #151515;
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .page-title-label {
+      color: #111;
+      font-size: 2rem;
+      line-height: 1.18;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.8rem;
+    }
+
+    .body-copy {
+      color: #4b5450;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .compact-copy {
+      color: #343b38;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .meta-label {
+      color: #006c4c;
+      font-size: 1rem;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .meta-label + .meta-label::before {
+      content: "|";
+      color: #006c4c;
+      margin-right: 0.65rem;
+    }
+
+    .button-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a1a1a;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .button-label.primary {
+      color: #fff;
+    }
+
+    nav {
+      background: var(--paper);
+      border-bottom: 1px solid #f1f1f1;
+    }
+
+    .nav-inner {
+      max-width: 1280px;
+      height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      gap: 1.5rem;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6a4b91, #50806B);
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-link {
+      width: 58px;
+      height: 14px;
+    }
+
+    .nav-link.active {
+      position: relative;
+      background: #e8cbc9;
+    }
+
+    .nav-link.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -10px;
+      height: 2px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+
+    .nav-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+    }
+
+    .nav-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f9b8c8, #e879a0);
+      border: 2px solid var(--green);
+    }
+
+    .nav-button {
+      width: 86px;
+      height: 36px;
+      border: 1px solid #cbd5e0;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .page {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 2rem 2rem 5rem;
+    }
+
+    .back-line {
+      width: 220px;
+      height: 18px;
+      margin-bottom: 1.2rem;
+      background: #cfe0d8;
+    }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 4.5rem;
+      align-items: start;
+    }
+
+    .media-rail {
+      position: sticky;
+      top: 88px;
+    }
+
+    .recipe-photo {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.12)),
+        url("https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80") center / cover;
+      box-shadow: 0 2px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .caption-block {
+      margin-top: 1.35rem;
+    }
+
+    .caption-title {
+      width: 78%;
+      height: 16px;
+      margin-bottom: 0.7rem;
+    }
+
+    .caption-line {
+      height: 14px;
+      margin-bottom: 0.45rem;
+    }
+
+    .caption-line:nth-child(2) { width: 100%; }
+    .caption-line:nth-child(3) { width: 92%; }
+    .caption-line:nth-child(4) { width: 74%; }
+
+    .author-card {
+      margin-top: 1.4rem;
+      padding-top: 1.3rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .author-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f9b8c8, #e879a0);
+      border: 2px solid var(--green);
+      flex-shrink: 0;
+    }
+
+    .author-name {
+      width: 120px;
+      height: 15px;
+    }
+
+    .rating-line {
+      width: 160px;
+      height: 14px;
+      margin-left: 3rem;
+      background: #f5c183;
+    }
+
+    .date-line {
+      width: 120px;
+      height: 14px;
+      margin-top: 1rem;
+    }
+
+    .forum-button {
+      margin-top: 1.65rem;
+      width: 100%;
+      height: 44px;
+      border-radius: 24px;
+      background: var(--green);
+    }
+
+    .article {
+      min-width: 0;
+      padding-top: 0.5rem;
+    }
+
+    .article-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 2rem;
+    }
+
+    .article-title-block {
+      flex: 1;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
+    }
+
+    .meta-chip {
+      width: 86px;
+      height: 18px;
+      background: #cfe0d8;
+    }
+
+    .meta-chip.short { width: 62px; }
+    .meta-chip.long { width: 118px; }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-shrink: 0;
+      padding-top: 0.15rem;
+    }
+
+    .icon-button {
+      width: 42px;
+      height: 36px;
+      border: 1px solid #dadde2;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .wide-button {
+      width: 82px;
+      height: 36px;
+      border: 1px solid #dadde2;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .count-line {
+      width: 32px;
+      height: 16px;
+    }
+
+    .save-action {
+      margin-left: 0.45rem;
+    }
+
+    .summary-block {
+      max-width: 780px;
+      margin: 0.8rem 0 1.65rem;
+    }
+
+    .summary-block p {
+      max-width: 760px;
+    }
+
+    .summary-block .blank {
+      height: 16px;
+      margin-bottom: 0.55rem;
+    }
+
+    .summary-block .blank:nth-child(1) { width: 100%; }
+    .summary-block .blank:nth-child(2) { width: 94%; }
+    .summary-block .blank:nth-child(3) { width: 68%; }
+
+    .ingredient-section {
+      max-width: 840px;
+      margin: 1.8rem 0 1.45rem;
+      padding: 1.25rem 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.95rem;
+    }
+
+    .section-title-placeholder {
+      width: 150px;
+      height: 22px;
+      background: #d2d8d5;
+    }
+
+    .section-count {
+      width: 70px;
+      height: 14px;
+    }
+
+    .ingredient-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2.5rem;
+      row-gap: 0.7rem;
+    }
+
+    .ingredient-row {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .bullet {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    .ingredient-line {
+      height: 15px;
+      flex: 1;
+    }
+
+    .ingredient-text {
+      color: #303733;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .content-section {
+      max-width: 840px;
+      margin-bottom: 1.55rem;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.9rem;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eeeeee;
+    }
+
+    .step:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .step-number {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+
+    .step-title {
+      width: 36%;
+      height: 18px;
+      margin-bottom: 0.65rem;
+      background: #d2d8d5;
+    }
+
+    .step-line {
+      height: 15px;
+      margin-bottom: 0.45rem;
+    }
+
+    .step-line:nth-child(2) { width: 100%; }
+    .step-line:nth-child(3) { width: 96%; }
+    .step-line:nth-child(4) { width: 74%; }
+
+    .tip-list {
+      margin-top: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .tip-row {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 0.55rem;
+      align-items: center;
+    }
+
+    .tip-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      background: var(--green);
+    }
+
+    .tip-line {
+      height: 15px;
+    }
+
+    .tip-text {
+      color: #303733;
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .marketplace-section {
+      margin-top: 2.8rem;
+      max-width: 840px;
+    }
+
+    .marketplace-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 0.95rem;
+    }
+
+    .market-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .market-thumb {
+      height: 118px;
+      background: linear-gradient(135deg, #ffe5a8, #db8e34);
+    }
+
+    .market-card:nth-child(2) .market-thumb {
+      background: linear-gradient(135deg, #e4f1fb, #83b7d8);
+    }
+
+    .market-card:nth-child(3) .market-thumb {
+      background: linear-gradient(135deg, #ffe0c2, #f0a574);
+    }
+
+    .market-body {
+      padding: 0.75rem 0.85rem;
+    }
+
+    .market-title {
+      color: #1a1a1a;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 0.25rem;
+    }
+
+    .market-price {
+      color: var(--green);
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .market-line {
+      height: 15px;
+      margin-bottom: 0.45rem;
+    }
+
+    .market-line:first-child { width: 92%; }
+    .market-line:last-child {
+      width: 42%;
+      background: #cfe0d8;
+      margin-bottom: 0;
+    }
+
+    .discussion {
+      max-width: 840px;
+      margin-top: 1.4rem;
+      padding: 1.1rem 1.2rem;
+      border: 1px solid #c3dfa6;
+      border-radius: 8px;
+      background: #f4f9f0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .discussion-body {
+      flex: 1;
+    }
+
+    .discussion-title {
+      width: 55%;
+      height: 18px;
+      margin-bottom: 0.5rem;
+      background: #cfe0d8;
+    }
+
+    .discussion-line {
+      width: 82%;
+      height: 14px;
+      background: #dbe9ce;
+    }
+
+    .discussion-button {
+      width: 140px;
+      height: 42px;
+      border-radius: 8px;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 980px) {
+      .detail-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .media-rail {
+        position: static;
+        max-width: 520px;
+      }
+
+      .article-top {
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        padding: 1.25rem 1rem 3rem;
+      }
+
+      .nav-inner {
+        overflow-x: auto;
+      }
+
+      .ingredient-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .marketplace-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .discussion {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .discussion-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo-mark"></div>
+    <div class="logo-text">Culinaria</div>
+    <div class="nav-links">
+      <div class="nav-text">Home</div>
+      <div class="nav-text active">Recipe</div>
+      <div class="nav-text">Forum</div>
+      <div class="nav-text">Marketplace</div>
+      <div class="blank nav-dot"></div>
+      <div class="nav-avatar"></div>
+      <div class="nav-button button-label">Logout</div>
+    </div>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="small-label back-line" style="background: transparent;">&larr; Back to Recipes Overview</div>
+
+  <div class="detail-layout">
+    <aside class="media-rail">
+      <div class="recipe-photo"></div>
+
+      <div class="caption-block">
+        <div class="module-title" style="margin-bottom: 0.7rem;">Steaming Miso Ramen</div>
+        <p class="body-copy">A warm ramen bowl with miso broth, noodles, egg and toppings.</p>
+      </div>
+
+      <div class="author-card">
+        <div class="author-row">
+          <div class="avatar"></div>
+          <div class="small-label">Hiro Tanaka</div>
+        </div>
+        <div class="small-label" style="margin-left: 3rem;">5 Ratings</div>
+        <div class="small-label" style="margin-top: 1rem;">2026 May 10</div>
+        <div class="forum-button button-label primary">Discuss in Forum</div>
+      </div>
+    </aside>
+
+    <article class="article">
+      <div class="article-top">
+        <div class="article-title-block">
+          <h1 class="page-title-label">Japanese Miso Ramen</h1>
+          <div class="meta-row">
+            <div class="meta-label">Japanese</div>
+            <div class="meta-label">Medium</div>
+            <div class="meta-label">Asian Cuisine</div>
+            <div class="meta-label">45 min</div>
+          </div>
+        </div>
+        <div class="action-row">
+          <div class="icon-button button-label">Like</div>
+          <div class="small-label">234</div>
+          <div class="wide-button button-label">Dislike</div>
+          <div class="small-label">0</div>
+          <div class="wide-button button-label save-action">Save</div>
+        </div>
+      </div>
+
+      <div class="summary-block">
+        <p class="body-copy">A simple ramen recipe with rich miso broth, fresh noodles, soft-boiled egg and classic toppings.</p>
+      </div>
+
+      <section class="ingredient-section">
+        <div class="section-title-row">
+          <h2 class="module-title">Ingredients</h2>
+          <div class="small-label">6 items</div>
+        </div>
+        <div class="ingredient-grid">
+          <div class="ingredient-row"><div class="bullet"></div><div class="ingredient-text">Fresh ramen noodles</div></div>
+          <div class="ingredient-row"><div class="bullet"></div><div class="ingredient-text">White miso paste</div></div>
+          <div class="ingredient-row"><div class="bullet"></div><div class="ingredient-text">Chicken or pork broth</div></div>
+          <div class="ingredient-row"><div class="bullet"></div><div class="ingredient-text">Soft-boiled eggs</div></div>
+          <div class="ingredient-row"><div class="bullet"></div><div class="ingredient-text">Chashu pork</div></div>
+          <div class="ingredient-row"><div class="bullet"></div><div class="ingredient-text">Scallion and nori</div></div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="module-title">Instructions</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div>
+              <div class="small-label" style="margin-bottom: 0.65rem;">Prepare the Broth</div>
+              <p class="compact-copy">Warm the broth and mix in miso paste until smooth.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div>
+              <div class="small-label" style="margin-bottom: 0.65rem;">Cook the Noodles</div>
+              <p class="compact-copy">Boil noodles until springy, then drain and place in bowls.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div>
+              <div class="small-label" style="margin-bottom: 0.65rem;">Assemble and Serve</div>
+              <p class="compact-copy">Add broth, egg, pork, scallion and nori. Serve hot.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="module-title">Quick Tips</h2>
+        <div class="tip-list">
+          <div class="tip-row"><div class="tip-icon"></div><div class="tip-text">Do not boil miso after adding it.</div></div>
+          <div class="tip-row"><div class="tip-icon"></div><div class="tip-text">Use fresh noodles when possible.</div></div>
+          <div class="tip-row"><div class="tip-icon"></div><div class="tip-text">Serve immediately for best texture.</div></div>
+        </div>
+      </section>
+
+      <section class="marketplace-section">
+        <h2 class="module-title">Recommended Marketplace Items</h2>
+        <div class="marketplace-grid">
+          <div class="market-card">
+            <div class="market-thumb"></div>
+            <div class="market-body">
+              <div class="market-title">Fresh Ramen Noodles</div>
+              <div class="market-price">$4.99</div>
+            </div>
+          </div>
+          <div class="market-card">
+            <div class="market-thumb"></div>
+            <div class="market-body">
+              <div class="market-title">White Miso Paste</div>
+              <div class="market-price">$8.50</div>
+            </div>
+          </div>
+          <div class="market-card">
+            <div class="market-thumb"></div>
+            <div class="market-body">
+              <div class="market-title">Toasted Sesame Oil</div>
+              <div class="market-price">$6.20</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="discussion">
+        <div class="discussion-body">
+          <h2 class="module-title" style="margin-bottom: 0.5rem;">Forum Discussion</h2>
+          <p class="compact-copy">Ask questions or share your own version with the community.</p>
+        </div>
+        <div class="discussion-button button-label primary">Discuss in Forum</div>
+      </section>
+    </article>
+  </div>
+</main>
+
+</body>
+</html>

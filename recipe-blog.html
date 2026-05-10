@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Culinaria — Recipe Blog</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+      background: #fafafa; color: #1a1a1a;
+    }
+
+    /* ── NAV (white, matches real GreenThumbs Navbar.jsx) ── */
+    nav {
+      background: #fff; border-bottom: 1px solid #f1f1f1;
+      height: 64px;
+      display: flex; align-items: center; padding: 0 2rem; gap: 2rem;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      color: #50806B; font-weight: 700; font-size: 1.5rem; text-decoration: none;
+    }
+    .nav-logo-icon { font-size: 1.5rem; }
+    .nav-links { list-style: none; display: flex; gap: 1.5rem; margin-left: auto; }
+    .nav-links a {
+      color: #4a5568; text-decoration: none; font-size: 1rem; font-weight: 500;
+      padding-bottom: 4px; position: relative; transition: color 0.15s;
+    }
+    .nav-links a:hover { color: #c25450; }
+    .nav-links a.active { color: #c25450; }
+    .nav-links a.active::after {
+      content: ''; position: absolute;
+      left: 0; right: 0; bottom: -2px; height: 2px;
+      background: #c25450; border-radius: 2px;
+    }
+    .nav-btns { display: flex; gap: 0.6rem; margin-left: 1.5rem; }
+    .btn-login, .btn-signup {
+      border: none; padding: 0.5rem 1.25rem; border-radius: 8px;
+      font-size: 0.9rem; cursor: pointer; font-weight: 600; color: #fff;
+    }
+    .btn-login { background: #1a1a1a; }
+    .btn-login:hover { background: #000; }
+    .btn-signup { background: #50806B; }
+    .btn-signup:hover { background: #33423b; }
+
+    /* ── HERO ── */
+    .hero {
+      background: #c6d8aa;
+      position: relative; overflow: visible;
+      padding: 3rem 1.5rem 3.2rem; text-align: center;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 70% at 15% 55%, rgba(255,255,255,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 85% 25%, rgba(255,255,255,0.13) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .hero-deco-1, .hero-deco-2 {
+      position: absolute; border-radius: 50%; pointer-events: none;
+    }
+    .hero-deco-1 { width: 300px; height: 300px; border: 45px solid rgba(255,255,255,0.1); top: -70px; right: -50px; }
+    .hero-deco-2 { width: 200px; height: 200px; border: 35px solid rgba(255,255,255,0.1); bottom: -50px; left: -40px; }
+
+    .hero-content { position: relative; z-index: 2; max-width: 640px; margin: 0 auto; }
+    .hero h1 {
+      font-size: 2rem; font-weight: 800; color: #2F3D37;
+      margin-bottom: 0.5rem; letter-spacing: -0.01em;
+    }
+    .hero p { color: #3a5820; font-size: 0.97rem; margin-bottom: 1.5rem; }
+
+    /* search wrapper holds box + dropdown */
+    .search-wrapper { position: relative; max-width: 560px; margin: 0 auto 1.2rem; }
+
+    .search-box {
+      display: flex; align-items: center; background: #fff;
+      border: 1.5px solid #d4d4d4; border-radius: 8px;
+      padding: 0.5rem 0.6rem 0.5rem 1rem; gap: 0.5rem;
+    }
+    .search-box .icon { color: #888; font-size: 0.95rem; }
+    .search-box input {
+      flex: 1; border: none; outline: none;
+      font-size: 0.92rem; color: #333; background: transparent;
+    }
+    .search-box input::placeholder { color: #aaa; }
+    .search-go {
+      background: #2F3D37; color: #fff; border: none;
+      width: 34px; height: 34px; border-radius: 6px;
+      cursor: pointer; font-size: 0.95rem;
+    }
+    .search-go:hover { background: #33423b; }
+
+    /* ── SEARCH DROPDOWN ── */
+    .search-dropdown {
+      margin-top: 8px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+      overflow: hidden;
+      text-align: left;
+    }
+    .sort-tabs {
+      display: flex; gap: 0; padding: 0.55rem 1rem 0;
+      border-bottom: 1px solid #eee;
+    }
+    .sort-tab {
+      padding: 0.45rem 0.85rem; font-size: 0.78rem;
+      color: #666; cursor: pointer;
+      background: none; border: none;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      font-weight: 500; transition: color 0.15s;
+    }
+    .sort-tab:hover { color: #50806B; }
+    .sort-tab.active { color: #2F3D37; border-bottom-color: #2F3D37; font-weight: 700; }
+
+    .result-list { list-style: none; padding: 0.5rem 0; }
+    .result-item {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 0.6rem 1rem; cursor: pointer;
+      transition: background 0.12s;
+    }
+    .result-item:hover { background: #f5f5f5; }
+    .result-thumb {
+      width: 42px; height: 42px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.45rem; flex-shrink: 0;
+    }
+    .result-info { flex: 1; min-width: 0; }
+    .result-title { font-size: 0.88rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.15rem; }
+    .result-meta { font-size: 0.74rem; color: #888; display: flex; gap: 0.55rem; }
+    .result-meta .badge {
+      padding: 0.05rem 0.4rem; border-radius: 10px;
+      font-size: 0.68rem; font-weight: 600;
+    }
+    .b-asian   { background: #fff3cd; color: #7a5c04; }
+    .b-european { background: #d4e9f7; color: #0a4d75; }
+    .b-dessert { background: #fce4ec; color: #8a1832; }
+    .b-veg     { background: #d9f0df; color: #1a6131; }
+
+    .view-all {
+      display: block; padding: 0.7rem 1rem;
+      background: #f9f9f9; border-top: 1px solid #eee;
+      text-align: center; color: #50806B;
+      font-size: 0.83rem; font-weight: 600; cursor: pointer;
+      text-decoration: none;
+    }
+    .view-all:hover { background: #f0f0f0; }
+
+    /* ── CREATE RECIPE CTA ── */
+    .btn-create-hero {
+      background: rgba(255,255,255,0.85);
+      color: #2F3D37; border: 1.5px solid #2F3D37;
+      padding: 0.55rem 1.4rem; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: 0.15s;
+    }
+    .btn-create-hero:hover { background: #fff; }
+
+    /* ── CONTAINER ── */
+    .container { max-width: 1180px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+    /* ── SECTION HEADERS ── */
+    .section-block { margin-bottom: 2.5rem; }
+    .section-head {
+      display: flex; align-items: baseline; gap: 0.55rem; margin-bottom: 1rem;
+    }
+    .section-head h2 { font-size: 1.1rem; font-weight: 700; color: #1a1a1a; }
+    .section-head .right { margin-left: auto; font-size: 0.82rem; color: #50806B; cursor: pointer; }
+    .section-head .right:hover { text-decoration: underline; }
+
+    /* ── CATEGORY CARDS ── */
+    .cat-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+    }
+    .cat-card {
+      background: #fff; border: 1.5px solid #e5e5e5; border-radius: 10px;
+      padding: 1.2rem; cursor: pointer; transition: 0.2s;
+      text-decoration: none; color: inherit; display: block;
+    }
+    .cat-card:hover {
+      border-color: #50806B; box-shadow: 0 2px 10px rgba(90,148,56,0.15);
+      transform: translateY(-1px);
+    }
+    .cat-icon { font-size: 1.65rem; margin-bottom: 0.55rem; display: block; }
+    .cat-card h3 { font-size: 0.97rem; font-weight: 700; color: #2F3D37; margin-bottom: 0.3rem; }
+    .cat-card p { font-size: 0.78rem; color: #666; line-height: 1.45; margin-bottom: 0.8rem; }
+    .cat-count { font-size: 0.75rem; color: #999; }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex; border-bottom: 2px solid #e2e2e2;
+      margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      padding: 0.55rem 1.15rem; font-size: 0.84rem; font-weight: 500;
+      color: #777; cursor: pointer; background: none; border: none;
+      border-bottom: 2.5px solid transparent; margin-bottom: -2px; transition: 0.15s;
+    }
+    .tab-btn:hover { color: #50806B; }
+    .tab-btn.active { color: #2F3D37; border-bottom-color: #2F3D37; font-weight: 700; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── RECIPE CARDS (single badge, simplified) ── */
+    .recipe-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
+    }
+    .r-card {
+      background: #fff; border: 1.5px solid #e5e5e5; border-radius: 10px;
+      overflow: hidden; cursor: pointer; transition: 0.2s;
+    }
+    .r-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.09); border-color: #c5d8b0; }
+    .r-thumb {
+      height: 140px; display: flex; align-items: center; justify-content: center;
+      font-size: 3.2rem;
+    }
+    .r-body { padding: 1rem; }
+    .r-badge {
+      display: inline-block; padding: 0.13rem 0.55rem;
+      border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .r-title { font-size: 0.94rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.4rem; line-height: 1.35; }
+    .r-desc { font-size: 0.77rem; color: #888; line-height: 1.4; margin-bottom: 0.7rem; }
+    .r-meta { display: flex; gap: 1rem; font-size: 0.73rem; color: #aaa; }
+    .r-meta span { display: flex; align-items: center; gap: 0.25rem; }
+    .r-meta .hot { color: #e05555; }
+
+    .r-author {
+      display: flex; align-items: center; gap: 0.45rem;
+      margin-top: 0.65rem; padding-top: 0.55rem;
+      border-top: 1px solid #f0f0f0;
+      font-size: 0.74rem; color: #777;
+    }
+    .r-avatar {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    }
+    .av-1 { background: linear-gradient(135deg, #f9b8c8, #e879a0); }
+    .av-2 { background: linear-gradient(135deg, #74b9e8, #3a82c4); }
+    .av-3 { background: linear-gradient(135deg, #86efac, #22c55e); }
+    .av-4 { background: linear-gradient(135deg, #ff9a56, #e05d2a); }
+    .av-5 { background: linear-gradient(135deg, #d4b4e8, #8c5cb8); }
+    .av-6 { background: linear-gradient(135deg, #ffd089, #c98b4f); }
+    .r-author .name { font-weight: 600; color: #444; }
+    .r-author .dot { color: #ccc; }
+    .r-author .date { color: #999; }
+
+    .th-asian   { background: linear-gradient(135deg, #ff9a56, #e05d2a); }
+    .th-euro    { background: linear-gradient(135deg, #74b9e8, #3a82c4); }
+    .th-dessert { background: linear-gradient(135deg, #f9a8d4, #e879a0); }
+    .th-veg     { background: linear-gradient(135deg, #86efac, #22c55e); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 2rem;
+      font-size: 0.78rem; color: #aaa;
+      border-top: 1px solid #e8e8e8; margin-top: 3rem;
+    }
+
+    @media (max-width: 900px) {
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .recipe-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 580px) {
+      .recipe-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="recipe-blog.html" class="nav-logo">
+    <span class="nav-logo-icon">🍳</span>
+    Culinaria
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="recipe-asian.html" class="active">Recipe</a></li>
+    <li><a href="#">Forum</a></li>
+    <li><a href="#">Marketplace</a></li>
+  </ul>
+  <div class="nav-btns">
+    <button class="btn-login">Login</button>
+    <button class="btn-signup">Sign Up</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-deco-1"></div>
+  <div class="hero-deco-2"></div>
+  <div class="hero-content">
+    <h1>Welcome to Culinaria!</h1>
+    <p>Search any recipe across cuisines, or share your own creations.</p>
+
+    <div class="search-wrapper">
+      <!-- Search Box -->
+      <div class="search-box">
+        <span class="icon">🔍</span>
+        <input type="text" value="ramen" placeholder="Search recipes by name, ingredient, or cuisine...">
+        <button class="search-go">→</button>
+      </div>
+
+      <!-- Search Dropdown (visible / active state) -->
+      <div class="search-dropdown">
+        <div class="sort-tabs">
+          <button class="sort-tab active">🎯 Relevant</button>
+          <button class="sort-tab">🕒 Recent</button>
+          <button class="sort-tab">🔥 Popular</button>
+        </div>
+
+        <ul class="result-list">
+          <li class="result-item">
+            <div class="result-thumb th-asian">🍜</div>
+            <div class="result-info">
+              <div class="result-title">Japanese Miso Ramen</div>
+              <div class="result-meta">
+                <span class="badge b-asian">Asian</span>
+                <span>❤️ 234</span>
+                <span>⏱ 45 min</span>
+              </div>
+            </div>
+          </li>
+          <li class="result-item">
+            <div class="result-thumb th-asian">🍲</div>
+            <div class="result-info">
+              <div class="result-title">Tonkotsu Pork Ramen</div>
+              <div class="result-meta">
+                <span class="badge b-asian">Asian</span>
+                <span>❤️ 189</span>
+                <span>⏱ 3 hr</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <a href="#" class="view-all">View all 24 results →</a>
+      </div>
+    </div>
+
+    <!-- Create Recipe CTA -->
+    <button class="btn-create-hero">+ Create Recipe</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- BROWSE BY CUISINE -->
+  <div class="section-block">
+    <div class="section-head">
+      <h2>🌍 Browse by Cuisine</h2>
+    </div>
+    <div class="cat-grid">
+      <a href="recipe-asian.html" class="cat-card">
+        <span class="cat-icon">🍜</span>
+        <h3>Asian Cuisine</h3>
+        <p>Chinese, Japanese, Korean, and Southeast Asian flavors all in one place.</p>
+        <div class="cat-count">📝 128 recipes</div>
+      </a>
+      <a href="#" class="cat-card">
+        <span class="cat-icon">🍝</span>
+        <h3>European Cuisine</h3>
+        <p>Italian, French, and Mediterranean — taste the heart of Europe.</p>
+        <div class="cat-count">📝 94 recipes</div>
+      </a>
+      <a href="#" class="cat-card">
+        <span class="cat-icon">🎂</span>
+        <h3>Desserts &amp; Baking</h3>
+        <p>Cakes, cookies, mousse, bread — the sweet life starts in the oven.</p>
+        <div class="cat-count">📝 76 recipes</div>
+      </a>
+      <a href="#" class="cat-card">
+        <span class="cat-icon">🥗</span>
+        <h3>Vegetarian</h3>
+        <p>Healthy bowls, plant proteins — proof that veggies can be exciting.</p>
+        <div class="cat-count">📝 52 recipes</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ALL RECIPES -->
+  <div class="section-block">
+    <div class="section-head">
+      <h2>🍽️ All Recipes</h2>
+      <span class="right">View all →</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('recent',this)">🕒 Recently Updated</button>
+      <button class="tab-btn" onclick="switchTab('liked',this)">❤️ Most Liked</button>
+      <button class="tab-btn" onclick="switchTab('saved',this)">🔖 Recently Saved</button>
+    </div>
+
+    <!-- TAB: Recently Updated -->
+    <div id="tab-recent" class="tab-panel active">
+      <div class="recipe-grid">
+        <div class="r-card">
+          <div class="r-thumb th-asian">🍜</div>
+          <div class="r-body">
+            <span class="r-badge b-asian">Asian</span>
+            <div class="r-title">Japanese Miso Ramen</div>
+            <div class="r-desc">Rich miso broth with soft-boiled egg and chashu — Hakata flavor at home.</div>
+            <div class="r-meta"><span class="hot">❤️ 234</span><span>⏱ 45 min</span></div>
+            <div class="r-author"><div class="r-avatar av-1"></div><span class="name">Hiro Tanaka</span><span class="dot">·</span><span class="date">2 days ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-dessert">🍮</div>
+          <div class="r-body">
+            <span class="r-badge b-dessert">Dessert</span>
+            <div class="r-title">Classic Tiramisu</div>
+            <div class="r-desc">Mascarpone meets espresso in this no-bake Italian favorite.</div>
+            <div class="r-meta"><span class="hot">❤️ 312</span><span>⏱ 30 min</span></div>
+            <div class="r-author"><div class="r-avatar av-2"></div><span class="name">Sofia Romano</span><span class="dot">·</span><span class="date">3 days ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-asian">🍛</div>
+          <div class="r-body">
+            <span class="r-badge b-asian">Asian</span>
+            <div class="r-title">Thai Green Curry</div>
+            <div class="r-desc">Coconut milk and lemongrass with tender chicken — Bangkok in a bowl.</div>
+            <div class="r-meta"><span class="hot">❤️ 198</span><span>⏱ 35 min</span></div>
+            <div class="r-author"><div class="r-avatar av-3"></div><span class="name">Niran K.</span><span class="dot">·</span><span class="date">4 days ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-euro">🫕</div>
+          <div class="r-body">
+            <span class="r-badge b-european">European</span>
+            <div class="r-title">Crème Brûlée</div>
+            <div class="r-desc">Crisp caramel shell over silky vanilla custard — a French classic.</div>
+            <div class="r-meta"><span class="hot">❤️ 267</span><span>⏱ 50 min</span></div>
+            <div class="r-author"><div class="r-avatar av-4"></div><span class="name">Pierre Dubois</span><span class="dot">·</span><span class="date">5 days ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-veg">🥗</div>
+          <div class="r-body">
+            <span class="r-badge b-veg">Vegetarian</span>
+            <div class="r-title">Rainbow Chickpea Salad</div>
+            <div class="r-desc">Seven colorful veggies with lemon-tahini dressing — done in 10 min.</div>
+            <div class="r-meta"><span class="hot">❤️ 145</span><span>⏱ 15 min</span></div>
+            <div class="r-author"><div class="r-avatar av-5"></div><span class="name">Leo Green</span><span class="dot">·</span><span class="date">1 week ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-euro">🍝</div>
+          <div class="r-body">
+            <span class="r-badge b-european">European</span>
+            <div class="r-title">Creamy Mushroom Pasta</div>
+            <div class="r-desc">Fresh button mushrooms and parmesan — simple ingredients, deep flavor.</div>
+            <div class="r-meta"><span class="hot">❤️ 189</span><span>⏱ 25 min</span></div>
+            <div class="r-author"><div class="r-avatar av-6"></div><span class="name">Marco Russo</span><span class="dot">·</span><span class="date">1 week ago</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Most Liked -->
+    <div id="tab-liked" class="tab-panel">
+      <div class="recipe-grid">
+        <div class="r-card">
+          <div class="r-thumb th-asian">🥩</div>
+          <div class="r-body">
+            <span class="r-badge b-asian">Asian</span>
+            <div class="r-title">Dongpo Braised Pork</div>
+            <div class="r-desc">Fatty but never greasy — melts in your mouth, authentic Hangzhou recipe.</div>
+            <div class="r-meta"><span class="hot">❤️ 1,024</span><span>⏱ 2 hr</span></div>
+            <div class="r-author"><div class="r-avatar av-1"></div><span class="name">Chef Ming</span><span class="dot">·</span><span class="date">3 weeks ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-dessert">🍫</div>
+          <div class="r-body">
+            <span class="r-badge b-dessert">Dessert</span>
+            <div class="r-title">Chocolate Lava Cake</div>
+            <div class="r-desc">Molten chocolate flows out as you cut in — a feast for both eyes and tongue.</div>
+            <div class="r-meta"><span class="hot">❤️ 891</span><span>⏱ 20 min</span></div>
+            <div class="r-author"><div class="r-avatar av-2"></div><span class="name">Emma Baker</span><span class="dot">·</span><span class="date">2 weeks ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-asian">🍲</div>
+          <div class="r-body">
+            <span class="r-badge b-asian">Asian</span>
+            <div class="r-title">Vietnamese Phở</div>
+            <div class="r-desc">8-hour bone broth with herbs and lime — the soul lives in the soup.</div>
+            <div class="r-meta"><span class="hot">❤️ 756</span><span>⏱ 1 hr</span></div>
+            <div class="r-author"><div class="r-avatar av-3"></div><span class="name">An Nguyen</span><span class="dot">·</span><span class="date">1 month ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-euro">🥘</div>
+          <div class="r-body">
+            <span class="r-badge b-european">European</span>
+            <div class="r-title">Spanish Paella</div>
+            <div class="r-desc">Saffron-tinted rice with shrimp, mussels, and squid — a Mediterranean feast.</div>
+            <div class="r-meta"><span class="hot">❤️ 678</span><span>⏱ 45 min</span></div>
+            <div class="r-author"><div class="r-avatar av-4"></div><span class="name">Carlos Vega</span><span class="dot">·</span><span class="date">2 months ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-veg">🥙</div>
+          <div class="r-body">
+            <span class="r-badge b-veg">Vegetarian</span>
+            <div class="r-title">Veggie Buddha Bowl</div>
+            <div class="r-desc">Quinoa, avocado, and roasted veggies — low-cal and high-impact.</div>
+            <div class="r-meta"><span class="hot">❤️ 543</span><span>⏱ 20 min</span></div>
+            <div class="r-author"><div class="r-avatar av-5"></div><span class="name">Leo Green</span><span class="dot">·</span><span class="date">3 weeks ago</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-dessert">🥐</div>
+          <div class="r-body">
+            <span class="r-badge b-dessert">Dessert</span>
+            <div class="r-title">French Butter Croissants</div>
+            <div class="r-desc">72 layers of flaky pastry — master the folds and bake bakery-grade at home.</div>
+            <div class="r-meta"><span class="hot">❤️ 487</span><span>⏱ 3 hr</span></div>
+            <div class="r-author"><div class="r-avatar av-4"></div><span class="name">Pierre Dubois</span><span class="dot">·</span><span class="date">1 month ago</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Recently Saved -->
+    <div id="tab-saved" class="tab-panel">
+      <div class="recipe-grid">
+        <div class="r-card">
+          <div class="r-thumb th-dessert">🍰</div>
+          <div class="r-body">
+            <span class="r-badge b-dessert">Dessert</span>
+            <div class="r-title">Japanese Soufflé Pancakes</div>
+            <div class="r-desc">Cloud-like and jiggling — unbelievably soft, with a step-by-step guide.</div>
+            <div class="r-meta"><span class="hot">❤️ 634</span><span>⏱ Saved 2h ago</span></div>
+            <div class="r-author"><div class="r-avatar av-1"></div><span class="name">Hiro Tanaka</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-asian">🥟</div>
+          <div class="r-body">
+            <span class="r-badge b-asian">Asian</span>
+            <div class="r-title">Handmade Dumpling Guide</div>
+            <div class="r-desc">From dough to wrapper to pleats — five classic fillings included.</div>
+            <div class="r-meta"><span class="hot">❤️ 445</span><span>⏱ Saved yesterday</span></div>
+            <div class="r-author"><div class="r-avatar av-1"></div><span class="name">Chef Ming</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-veg">🫙</div>
+          <div class="r-body">
+            <span class="r-badge b-veg">Vegetarian</span>
+            <div class="r-title">Homemade Tofu Pudding</div>
+            <div class="r-desc">Soak, blend, set with gypsum — savory and sweet versions both included.</div>
+            <div class="r-meta"><span class="hot">❤️ 378</span><span>⏱ Saved 3d ago</span></div>
+            <div class="r-author"><div class="r-avatar av-3"></div><span class="name">Wen Lin</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-euro">🍕</div>
+          <div class="r-body">
+            <span class="r-badge b-european">European</span>
+            <div class="r-title">Margherita Pizza</div>
+            <div class="r-desc">72-hour cold-fermented dough with San Marzano sauce — pure simplicity.</div>
+            <div class="r-meta"><span class="hot">❤️ 521</span><span>⏱ Saved 5d ago</span></div>
+            <div class="r-author"><div class="r-avatar av-2"></div><span class="name">Sofia Romano</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-asian">🍱</div>
+          <div class="r-body">
+            <span class="r-badge b-asian">Asian</span>
+            <div class="r-title">Sushi Rolls for Beginners</div>
+            <div class="r-desc">Vinegar-rice ratios, nori placement, rolling technique — restaurant quality at home.</div>
+            <div class="r-meta"><span class="hot">❤️ 412</span><span>⏱ Saved 1w ago</span></div>
+            <div class="r-author"><div class="r-avatar av-1"></div><span class="name">Hiro Tanaka</span></div>
+          </div>
+        </div>
+        <div class="r-card">
+          <div class="r-thumb th-dessert">🍪</div>
+          <div class="r-body">
+            <span class="r-badge b-dessert">Dessert</span>
+            <div class="r-title">Soft-Center Chocolate Chip Cookies</div>
+            <div class="r-desc">Browned butter for depth, chilled dough for chew — a full level up.</div>
+            <div class="r-meta"><span class="hot">❤️ 356</span><span>⏱ Saved 2w ago</span></div>
+            <div class="r-author"><div class="r-avatar av-2"></div><span class="name">Emma Baker</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Culinaria &nbsp;·&nbsp; Cook every recipe with love
+</footer>
+
+<script>
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+</script>
+
+</body>
+</html>

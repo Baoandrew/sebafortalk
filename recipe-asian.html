@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asian Cuisine — Culinaria</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+    }
+
+    /* ── NAV (white, matches real GreenThumbs Navbar.jsx) ── */
+    nav {
+      background: #fff;
+      border-bottom: 1px solid #f1f1f1;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      gap: 2rem;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #50806B;
+      font-weight: 700;
+      font-size: 1.5rem;
+      text-decoration: none;
+    }
+    .nav-logo-icon { font-size: 1.5rem; }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin-left: auto;
+    }
+    .nav-links a {
+      color: #4a5568;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      padding-bottom: 4px;
+      position: relative;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: #c25450; }
+    .nav-links a.active { color: #c25450; }
+    .nav-links a.active::after {
+      content: ''; position: absolute;
+      left: 0; right: 0; bottom: -2px; height: 2px;
+      background: #c25450; border-radius: 2px;
+    }
+
+    .nav-icons { display: flex; gap: 1rem; align-items: center; margin-left: 1.5rem; }
+    .nav-bell {
+      color: #4a5568;
+      font-size: 1.05rem;
+      cursor: pointer;
+    }
+    .nav-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c8d8b0, #a8bc88);
+      border: 2px solid #50806B;
+      cursor: pointer;
+    }
+    .btn-logout {
+      background: #fff;
+      color: #4a5568;
+      border: 1px solid #cbd5e0;
+      padding: 0.45rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-logout:hover { color: #8FAD9A; border-color: #8FAD9A; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem 0.5rem;
+    }
+    .breadcrumb {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 0.6rem;
+    }
+    .breadcrumb a { color: #50806B; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { color: #ccc; margin: 0 0.4rem; }
+    .page-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #2F3D37;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .page-subtitle { font-size: 0.88rem; color: #777; margin-bottom: 1.25rem; }
+
+    /* ── SEARCH BAR ROW ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .search-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1.5px solid #d4d4d4;
+      border-radius: 6px;
+      padding: 0.55rem 1rem;
+    }
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 0.9rem;
+      color: #444;
+      background: transparent;
+    }
+    .search-box input::placeholder { color: #aaa; }
+    .search-box .icon { color: #888; font-size: 0.95rem; }
+    .sort-block { display: flex; align-items: center; gap: 0.6rem; }
+    .sort-block label { font-size: 0.85rem; color: #555; font-weight: 500; }
+    .sort-block select {
+      border: 1.5px solid #d4d4d4;
+      border-radius: 5px;
+      padding: 0.4rem 0.55rem;
+      font-size: 0.85rem;
+      background: #fff;
+      color: #333;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem 3rem;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 2rem;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 0.7rem;
+      margin-top: 1.5rem;
+    }
+    .sidebar h4:first-child { margin-top: 0; }
+    .filter-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: #444;
+      user-select: none;
+    }
+    .filter-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #50806B;
+      cursor: pointer;
+    }
+    .filter-item:hover { color: #2F3D37; }
+
+    .sidebar-actions {
+      margin-top: 1.7rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .btn-reset {
+      background: #fff;
+      color: #1a1a1a;
+      border: 1.5px solid #d4d4d4;
+      padding: 0.55rem 1.1rem;
+      border-radius: 22px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+    .btn-reset:hover { background: #f5f5f5; }
+    .btn-create {
+      background: #50806B;
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.1rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+    .btn-create:hover { background: #33423b; }
+
+    /* ── RECIPE GRID ── */
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .r-card {
+      background: #fff;
+      border: 1.5px solid #e5e5e5;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .r-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: #c5d8b0; }
+    .r-thumb {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .r-thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.06));
+    }
+    .r-body {
+      padding: 1.1rem 1.1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .r-tags { display: flex; gap: 0.4rem; margin-bottom: 0.55rem; flex-wrap: wrap; }
+    .r-tag {
+      display: inline-block;
+      padding: 0.13rem 0.55rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .tag-chinese  { background: #fde2e2; color: #8a1a1a; }
+    .tag-japanese { background: #e0ecf9; color: #1a4675; }
+    .tag-korean   { background: #fff0d4; color: #80540a; }
+    .tag-thai     { background: #d9f0df; color: #1a6131; }
+    .tag-viet     { background: #f3e1f7; color: #5a1c70; }
+    .tag-easy     { background: #e8f3da; color: #2f5e10; }
+    .tag-medium   { background: #fff0d4; color: #80540a; }
+    .tag-hard     { background: #fde2e2; color: #8a1a1a; }
+
+    .r-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 0.45rem;
+      line-height: 1.35;
+    }
+    .r-desc {
+      font-size: 0.83rem;
+      color: #777;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+    .r-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: #999;
+      margin-bottom: 0.85rem;
+    }
+    .r-meta span { display: flex; align-items: center; gap: 0.25rem; }
+    .r-meta .hot { color: #e05555; }
+
+    .r-author {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.85rem; margin-top: 0.1rem; padding-top: 0.7rem;
+      border-top: 1px solid #f0f0f0;
+      font-size: 0.78rem; color: #666;
+    }
+    .r-avatar {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    }
+    .av-1 { background: linear-gradient(135deg, #f9b8c8, #e879a0); }
+    .av-2 { background: linear-gradient(135deg, #74b9e8, #3a82c4); }
+    .av-3 { background: linear-gradient(135deg, #86efac, #22c55e); }
+    .av-4 { background: linear-gradient(135deg, #ff9a56, #e05d2a); }
+    .r-author .name { font-weight: 600; color: #333; }
+    .r-author .dot { color: #ccc; }
+    .r-author .date { color: #999; }
+
+    .btn-cook {
+      background: #50806B;
+      color: #fff;
+      border: none;
+      padding: 0.65rem 1rem;
+      border-radius: 24px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-cook:hover { background: #33423b; }
+
+    /* thumb gradients */
+    .th-noodle  { background: linear-gradient(135deg, #ffd089, #e87a3a); }
+    .th-pork    { background: linear-gradient(135deg, #c97b5c, #6e3a25); }
+    .th-pho     { background: linear-gradient(135deg, #f4d29c, #c98b4f); }
+    .th-bibim   { background: linear-gradient(135deg, #ffb380, #d6532a); }
+    .th-curry   { background: linear-gradient(135deg, #97d685, #3da154); }
+    .th-sushi   { background: linear-gradient(135deg, #f9b8c8, #c0596e); }
+
+    @media (max-width: 1000px) {
+      .container { grid-template-columns: 1fr; }
+      .recipe-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .recipe-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="recipe-blog.html" class="nav-logo">
+    <span class="nav-logo-icon">🍳</span>
+    Culinaria
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="recipe-blog.html" class="active">Recipe</a></li>
+    <li><a href="#">Forum</a></li>
+    <li><a href="#">Marketplace</a></li>
+  </ul>
+  <div class="nav-icons">
+    <span class="nav-bell">🔔</span>
+    <div class="nav-avatar"></div>
+  </div>
+  <button class="btn-logout">Logout</button>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="breadcrumb">
+    <a href="recipe-blog.html">Recipes</a>
+    <span>›</span>
+    Asian Cuisine
+  </div>
+  <h1 class="page-title">🍜 Asian Cuisine</h1>
+  <p class="page-subtitle">Chinese, Japanese, Korean, Thai and more — discover the depth of Asian flavors.</p>
+
+  <!-- SEARCH + SORT -->
+  <div class="top-bar">
+    <div class="search-box">
+      <span class="icon">🔍</span>
+      <input type="text" placeholder="Search Asian recipes...">
+    </div>
+    <div class="sort-block">
+      <label>Sort by:</label>
+      <select>
+        <option>Most Relevant</option>
+        <option>Most Liked</option>
+        <option>Recently Updated</option>
+        <option>Cook Time (shortest)</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h4>Sub-category:</h4>
+    <ul class="filter-list">
+      <li class="filter-item"><input type="checkbox"> Chinese</li>
+      <li class="filter-item"><input type="checkbox"> Japanese</li>
+      <li class="filter-item"><input type="checkbox"> Korean</li>
+      <li class="filter-item"><input type="checkbox"> Thai</li>
+      <li class="filter-item"><input type="checkbox"> Vietnamese</li>
+      <li class="filter-item"><input type="checkbox"> Indian</li>
+      <li class="filter-item"><input type="checkbox"> Other</li>
+    </ul>
+
+    <h4>Cook Time:</h4>
+    <ul class="filter-list">
+      <li class="filter-item"><input type="checkbox"> Under 30 min</li>
+      <li class="filter-item"><input type="checkbox"> 30 – 60 min</li>
+      <li class="filter-item"><input type="checkbox"> Over 60 min</li>
+    </ul>
+
+    <h4>Difficulty:</h4>
+    <ul class="filter-list">
+      <li class="filter-item"><input type="checkbox"> Easy</li>
+      <li class="filter-item"><input type="checkbox"> Medium</li>
+      <li class="filter-item"><input type="checkbox"> Hard</li>
+    </ul>
+
+    <div class="sidebar-actions">
+      <button class="btn-reset">Reset Filters</button>
+      <button class="btn-create">+ Create Recipe</button>
+    </div>
+  </aside>
+
+  <!-- RECIPE GRID -->
+  <div class="recipe-grid">
+
+    <div class="r-card">
+      <div class="r-thumb th-noodle">🍜</div>
+      <div class="r-body">
+        <div class="r-tags">
+          <span class="r-tag tag-japanese">Japanese</span>
+          <span class="r-tag tag-medium">Medium</span>
+        </div>
+        <div class="r-title">Japanese Miso Ramen</div>
+        <div class="r-desc">Rich miso broth simmered with garlic and ginger, topped with soft-boiled eggs and chashu pork. Authentic Hakata flavor at home.</div>
+        <div class="r-meta">
+          <span class="hot">❤️ 234</span>
+          <span>⏱ 45 min</span>
+        </div>
+        <div class="r-author"><div class="r-avatar av-1"></div><span class="name">Hiro Tanaka</span><span class="dot">·</span><span class="date">2 days ago</span></div>
+        <button class="btn-cook">Start Cooking</button>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-thumb th-pork">🥩</div>
+      <div class="r-body">
+        <div class="r-tags">
+          <span class="r-tag tag-chinese">Chinese</span>
+          <span class="r-tag tag-hard">Hard</span>
+        </div>
+        <div class="r-title">Dongpo Braised Pork</div>
+        <div class="r-desc">Iconic Hangzhou dish — pork belly braised low and slow with Shaoxing wine until it melts on the tongue.</div>
+        <div class="r-meta">
+          <span class="hot">❤️ 1,024</span>
+          <span>⏱ 2 hr</span>
+        </div>
+        <div class="r-author"><div class="r-avatar av-1"></div><span class="name">Chef Ming</span><span class="dot">·</span><span class="date">3 weeks ago</span></div>
+        <button class="btn-cook">Start Cooking</button>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-thumb th-pho">🍲</div>
+      <div class="r-body">
+        <div class="r-tags">
+          <span class="r-tag tag-viet">Vietnamese</span>
+          <span class="r-tag tag-medium">Medium</span>
+        </div>
+        <div class="r-title">Vietnamese Phở</div>
+        <div class="r-desc">8-hour bone broth with star anise and cinnamon, finished with rice noodles, fresh herbs and lime.</div>
+        <div class="r-meta">
+          <span class="hot">❤️ 756</span>
+          <span>⏱ 1 hr (+broth)</span>
+        </div>
+        <div class="r-author"><div class="r-avatar av-3"></div><span class="name">An Nguyen</span><span class="dot">·</span><span class="date">1 month ago</span></div>
+        <button class="btn-cook">Start Cooking</button>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-thumb th-bibim">🍚</div>
+      <div class="r-body">
+        <div class="r-tags">
+          <span class="r-tag tag-korean">Korean</span>
+          <span class="r-tag tag-easy">Easy</span>
+        </div>
+        <div class="r-title">Korean Bibimbap</div>
+        <div class="r-desc">Warm rice topped with seasoned vegetables, beef and a runny egg. Mix everything with gochujang for a spicy kick.</div>
+        <div class="r-meta">
+          <span class="hot">❤️ 412</span>
+          <span>⏱ 30 min</span>
+        </div>
+        <div class="r-author"><div class="r-avatar av-4"></div><span class="name">Park Min-jun</span><span class="dot">·</span><span class="date">2 weeks ago</span></div>
+        <button class="btn-cook">Start Cooking</button>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-thumb th-curry">🍛</div>
+      <div class="r-body">
+        <div class="r-tags">
+          <span class="r-tag tag-thai">Thai</span>
+          <span class="r-tag tag-easy">Easy</span>
+        </div>
+        <div class="r-title">Thai Green Curry</div>
+        <div class="r-desc">Coconut milk and lemongrass with tender chicken and Thai basil — a fragrant taste of Bangkok streets.</div>
+        <div class="r-meta">
+          <span class="hot">❤️ 198</span>
+          <span>⏱ 35 min</span>
+        </div>
+        <div class="r-author"><div class="r-avatar av-3"></div><span class="name">Niran K.</span><span class="dot">·</span><span class="date">4 days ago</span></div>
+        <button class="btn-cook">Start Cooking</button>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-thumb th-sushi">🍣</div>
+      <div class="r-body">
+        <div class="r-tags">
+          <span class="r-tag tag-japanese">Japanese</span>
+          <span class="r-tag tag-medium">Medium</span>
+        </div>
+        <div class="r-title">Sushi Rolls for Beginners</div>
+        <div class="r-desc">Vinegar-rice ratios, nori placement, rolling technique — a complete beginner's guide to restaurant-quality rolls.</div>
+        <div class="r-meta">
+          <span class="hot">❤️ 412</span>
+          <span>⏱ 50 min</span>
+        </div>
+        <div class="r-author"><div class="r-avatar av-1"></div><span class="name">Hiro Tanaka</span><span class="dot">·</span><span class="date">1 week ago</span></div>
+        <button class="btn-cook">Start Cooking</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
